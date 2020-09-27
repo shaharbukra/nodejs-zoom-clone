@@ -32,11 +32,22 @@ app.get("/:room", (req, res) => {
  * @param emit {string} - Name of message to emit
  * @param message {any} - Message to be sent
  **/
-
-const sendToAllRoom = (room, emit, message) => {
+const sendTimeToAllRooms = (timer) =>{
   for (let i in USER_LIST) {
-    if (USER_LIST[i].room == room) {
-      USER_LIST[i].socket.emit(emit, message);
+    sendToAllRoom(USER_LIST[i].room,'timer',timer);
+  }
+}
+const sendToAllRoom = (room, emit, message) => {
+  if (Array.isArray(USER_LIST)) {
+    const data = USER_LIST.filter((u) => u.room === room);
+    if (data) {
+      USER_LIST[data.room].socket.emit(emit, message);
+    }
+  } else {
+    for (let i in USER_LIST) {
+      if (USER_LIST[i] && USER_LIST[i].room == room) {
+        USER_LIST[i].socket.emit(emit, message);
+      }
     }
   }
 };
@@ -60,16 +71,33 @@ io.on("connection", (socket) => {
 
   // messages
   socket.on("message", (data) => {
-    console.log(data.message, USER_LIST[socket.id].room);
-    //send message to the same room
-    sendToAllRoom(USER_LIST[socket.id].room, "createMessage", data);
+    if (USER_LIST[socket.id]) {
+      console.log(data.message, USER_LIST[socket.id].room);
+      //send message to the same room
+      sendToAllRoom(USER_LIST[socket.id].room, "createMessage", data);
+    }
   });
 
   socket.on("disconnect", () => {
-    sendToAllRoom(USER_LIST[socket.id].room, "user-disconnected", socket.id);
-    delete USER_LIST[socket.id];
+    if (USER_LIST[socket.id]) {
+      sendToAllRoom(USER_LIST[socket.id].room, "user-disconnected", socket.id);
+      delete USER_LIST[socket.id];
+    }
   });
 });
+
+let timeLeft = 30;
+setInterval(countdown, 1000);
+    
+function countdown() {
+  if (timeLeft == -1) {
+    timeLeft = 30;
+  } else {
+    //elem.innerHTML = timeLeft + ' seconds remaining';
+    sendTimeToAllRooms(timeLeft);
+    timeLeft--;
+  }
+}
 
 server.listen(process.env.PORT || 3030);
 console.log("server started");

@@ -44,6 +44,10 @@ navigator.mediaDevices
       );
       scrollToBottom();
     });
+    socket.on("timer", (time) => {
+      // $("#meetingTimer").val(time);
+      document.querySelector("#meetingTimer").innerHTML = time;
+    });
   });
 
 socket.on("user-disconnected", (userId) => {
@@ -57,6 +61,7 @@ myPeer.on("open", (id) => {
   } else {
     setUserName();
   }
+  
 
   socket.emit("join-room", ROOM_ID, id);
 });
