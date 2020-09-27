@@ -8,7 +8,7 @@ const { ExpressPeerServer } = require("peer");
 const peerServer = ExpressPeerServer(server, {
   debug: true,
 });
-const User = require("./User.js");
+const User = require("./user.js");
 const { v4: uuidV4 } = require("uuid");
 
 let USER_LIST = {};
