@@ -29,23 +29,22 @@ navigator.mediaDevices
       connectToNewUser(userId, stream);
     });
     // input value
-    let text = $("input");
+    let text = document.querySelector("#chat_message");
     // when press enter send message
-    $("html").keydown(function (e) {
-      let value = text.val();
-      if (e.which == 13 && value.length !== 0) {
+    document.querySelector("html").addEventListener("keydown", (e) => {
+      let value = text.value;
+      if (e.keyCode == 13 && value.length !== 0) {
         socket.emit("message", { message: value, name: myName });
-        text.val("");
+        text.value = "";
       }
     });
     socket.on("createMessage", (data) => {
-      $("ul").append(
-        `<li class="message"><b>${data.name}</b><br/>${data.message}</li>`
-      );
+      let messagesElement = document.querySelector("ul");
+      messagesElement.innerHTML += `<li class="message"><b>${data.name}</b><br/>${data.message}</li>`;
+
       scrollToBottom();
     });
     socket.on("timer", (time) => {
-      // $("#meetingTimer").val(time);
       document.querySelector("#meetingTimer").innerHTML = time;
     });
   });
@@ -61,9 +60,8 @@ myPeer.on("open", (id) => {
   } else {
     setUserName();
   }
-  
 
-  socket.emit("join-room", ROOM_ID, id);
+  socket.emit("join-room", ROOM_ID, { id: id, name: myName });
 });
 
 function connectToNewUser(userId, stream) {
@@ -88,8 +86,8 @@ function addVideoStream(video, stream) {
 }
 
 const scrollToBottom = () => {
-  var d = $(".main__chat_window");
-  d.scrollTop(d.prop("scrollHeight"));
+  var d = document.querySelector(".main__chat_window");
+  d.scrollTop = d.scrollHeight;
 };
 
 const muteUnmute = () => {

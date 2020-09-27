@@ -4,5 +4,6 @@ module.exports = class User {
         this.id = setup.socket.id;
         this.room = setup.socket.room;
         this.socket = setup.socket;
+        this.userId = setup.userId;
     }
 } 

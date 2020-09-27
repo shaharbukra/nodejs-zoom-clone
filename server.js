@@ -13,6 +13,8 @@ const { v4: uuidV4 } = require("uuid");
 
 let USER_LIST = {};
 
+const serverDate = new Date();
+
 app.use("/peerjs", peerServer);
 
 app.set("view engine", "ejs");
@@ -26,17 +28,11 @@ app.get("/:room", (req, res) => {
   res.render("room", { roomId: req.params.room });
 });
 
-/**
- * @description Emits message to all users in a specific room
- * @param room {string} - Room name/id
- * @param emit {string} - Name of message to emit
- * @param message {any} - Message to be sent
- **/
-const sendTimeToAllRooms = (timer) =>{
+const sendTimeToAllRooms = (timer) => {
   for (let i in USER_LIST) {
-    sendToAllRoom(USER_LIST[i].room,'timer',timer);
+    sendToAllRoom(USER_LIST[i].room, "timer", timer);
   }
-}
+};
 const sendToAllRoom = (room, emit, message) => {
   if (Array.isArray(USER_LIST)) {
     const data = USER_LIST.filter((u) => u.room === room);
@@ -53,26 +49,28 @@ const sendToAllRoom = (room, emit, message) => {
 };
 
 io.on("connection", (socket) => {
-  //DEBUG: JOIN-ROOM NOT BEING SENT
-  //FIXED: JOIN-ROOM SENT CREATED HELPER FUNCTION ABOVE CALLED SENDTOALLROOM
   socket.on("join-room", (roomId, userId) => {
-    socket.id = userId;
+    socket.id = userId.id;
     socket.room = roomId;
     socket.join(roomId);
 
     sendToAllRoom(roomId, "user-connected", userId);
-    console.log(`joined ${roomId}`);
+    console.log(`[${serverDate.toLocaleString('he-IL')}] ${userId.name} joined ${roomId}`);
 
+    const userCount = USER_LIST.length ? USER_LIST.length : 0;
     USER_LIST[socket.id] = new User({
-      name: `User_${USER_LIST.length}`,
+      name: userId.name, //`User_${userCount}`,
       socket: socket,
+      userId: userId,
     });
+
+    // console.log(socket.id, USER_LIST)
   });
 
   // messages
   socket.on("message", (data) => {
     if (USER_LIST[socket.id]) {
-      console.log(data.message, USER_LIST[socket.id].room);
+      // console.log(data.message, USER_LIST[socket.id].room);
       //send message to the same room
       sendToAllRoom(USER_LIST[socket.id].room, "createMessage", data);
     }
@@ -81,6 +79,12 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     if (USER_LIST[socket.id]) {
       sendToAllRoom(USER_LIST[socket.id].room, "user-disconnected", socket.id);
+      console.log(
+        `[${serverDate.toLocaleString('he-IL')}] ${USER_LIST[socket.id].userId.name} disconnect ${
+          USER_LIST[socket.id].room
+        }`
+      );
+
       delete USER_LIST[socket.id];
     }
   });
@@ -88,7 +92,7 @@ io.on("connection", (socket) => {
 
 let timeLeft = 30;
 setInterval(countdown, 1000);
-    
+
 function countdown() {
   if (timeLeft == -1) {
     timeLeft = 30;
@@ -100,4 +104,4 @@ function countdown() {
 }
 
 server.listen(process.env.PORT || 3030);
-console.log("server started");
+console.log(`[${serverDate.toLocaleString('he-IL')}] server started`);

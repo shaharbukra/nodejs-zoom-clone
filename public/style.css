@@ -1,7 +1,13 @@
+*{
+  margin : 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 #video-grid {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  flex: 0 1 auto;
 }
 
 video {
@@ -33,6 +39,8 @@ video {
   justify-content: center;
   align-items: center;
   padding: 40px;
+  max-height: 700px;
+  overflow-y: auto;
 }
 
 .main__controls {
@@ -48,7 +56,7 @@ video {
   color: #d2d2d2;
   display: flex;
   justify-content: space-between;
-  padding: 5px;
+  padding: 10px;
 }
 
 .main__controls__block {
@@ -105,6 +113,7 @@ video {
   background-color: transparent;
   border: none;
   color: #f5f5f5;
+  outline-width: 0;
 }
 
 .meeting_timer {
