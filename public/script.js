@@ -51,7 +51,13 @@ socket.on("user-disconnected", (userId) => {
 });
 
 myPeer.on("open", (id) => {
-  setUserName();
+  const userName = localStorage.getItem("userName");
+  if (userName) {
+    myName = userName;
+  } else {
+    setUserName();
+  }
+
   socket.emit("join-room", ROOM_ID, id);
 });
 
@@ -139,6 +145,6 @@ const setPlayVideo = () => {
 const setUserName = () => {
   var person = prompt("Please enter your name", "Harry Potter");
   if (person != null) {
-    myName = person;
+    localStorage.setItem("userName", person);
   }
 };
