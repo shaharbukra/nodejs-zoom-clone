@@ -24,9 +24,9 @@ navigator.mediaDevices
       });
     });
 
-    socket.on("user-connected", (userId) => {
+    socket.on("user-connected", (data) => {
       console.log("New user!");
-      connectToNewUser(userId, stream);
+      connectToNewUser(data.id, stream);
     });
     // input value
     let text = document.querySelector("#chat_message");

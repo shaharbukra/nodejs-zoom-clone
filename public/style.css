@@ -1,5 +1,5 @@
-*{
-  margin : 0;
+* {
+  margin: 0;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -39,12 +39,13 @@ video {
   justify-content: center;
   align-items: center;
   padding: 40px;
-  max-height: 700px;
+  height: 90vh;
   overflow-y: auto;
 }
 
 .main__controls {
   background-color: #1c1e20;
+  height: 10vh;
 }
 
 .main__right {
@@ -79,6 +80,7 @@ video {
 }
 
 .main__controls__button i {
+  margin-bottom: 10px;
   font-size: 24px;
 }
 
